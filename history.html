@@ -16,7 +16,13 @@
     <section class="history" aria-label="Histórico das vias">
       <div class="history-header">
         <h3>Registros</h3>
-        <button id="refreshHistoryBtn" class="btn btn-secondary" type="button">Atualizar</button>
+        <div class="history-actions">
+          <label class="history-search" for="historySearchInput" aria-label="Pesquisar no histórico">
+            <span aria-hidden="true">🔎</span>
+            <input id="historySearchInput" type="search" placeholder="Pesquisar histórico" autocomplete="off">
+          </label>
+          <button id="refreshHistoryBtn" class="btn btn-secondary" type="button">Atualizar</button>
+        </div>
       </div>
 
       <div class="history-tabs" role="tablist" aria-label="Abas de histórico">
