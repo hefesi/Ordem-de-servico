@@ -192,15 +192,20 @@ document.addEventListener('DOMContentLoaded', () => {
   const printBtn = document.getElementById('printBtn');
   if (printBtn) printBtn.addEventListener('click', gerarOS);
 
-  const toggleHistoryBtn = document.getElementById('toggleHistoryBtn');
-  if (toggleHistoryBtn) toggleHistoryBtn.addEventListener('click', () => {
+  function openHistoryPage() {
     if (isElectronEnv && window.electronAPI?.openHistoryWindow) {
       window.electronAPI.openHistoryWindow();
       return;
     }
 
     window.open('history.html', '_blank');
-  });
+  }
+
+  const toggleHistoryBtn = document.getElementById('toggleHistoryBtn');
+  if (toggleHistoryBtn) toggleHistoryBtn.addEventListener('click', openHistoryPage);
+
+  const historyCtaBtn = document.getElementById('historyCtaBtn');
+  if (historyCtaBtn) historyCtaBtn.addEventListener('click', openHistoryPage);
   
   if (tefInput) {
     tefInput.addEventListener('input', () => {
