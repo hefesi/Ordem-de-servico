@@ -22,6 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const osFooterEst = document.getElementById('osFooterEst');
   const previsaoInput = document.getElementById('previsao');
   const tefInput = document.getElementById('tef');
+  let currentPrintPayload = null;
 
   // Helper para alternar a classe de impressão no body
   function setPrintingClass(copy) {
@@ -41,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        window.electronAPI.print('Estabelecimento');
+        window.electronAPI.print('Estabelecimento', currentPrintPayload);
       });
     });
   }
@@ -63,7 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        window.electronAPI.print('Cliente');
+        window.electronAPI.print('Cliente', currentPrintPayload);
       });
     });
   }
@@ -87,6 +88,10 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(printCliente, 700); // Delay para transição visual
       }
 
+      if (isElectronEnv) {
+        loadHistory().catch(() => {});
+      }
+
       if (copy === 'Cliente') {
         printStatus.textContent = '2/2 - Via Cliente impressa ✅';
         // Limpeza final após a conclusão
@@ -99,6 +104,55 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 4000);
       }
     });
+  }
+
+
+  const historyEstEl = document.getElementById('historyEst');
+  const historyCliEl = document.getElementById('historyCli');
+  const refreshHistoryBtn = document.getElementById('refreshHistoryBtn');
+  const clearEstHistoryBtn = document.getElementById('clearEstHistoryBtn');
+  const clearCliHistoryBtn = document.getElementById('clearCliHistoryBtn');
+
+  function formatHistoryRows(rows) {
+    if (!rows || !rows.length) return 'Sem registros.';
+    return rows
+      .map((item) => {
+        const when = item.createdAt ? new Date(item.createdAt).toLocaleString('pt-BR') : '-';
+        return [
+          `Data: ${when}`,
+          `OS: ${item.osNumber || '-'}`,
+          `Cliente: ${item.cliente || '-'}`,
+          `Telefone: ${item.telefone || '-'}`,
+          `Equipamento: ${item.equipamento || '-'}`,
+          `Valor: R$ ${Number(item.valor || 0).toFixed(2)}`,
+          `Previsão: ${item.previsao || '-'}`,
+          `Serviço: ${item.nota || '-'} `
+        ].join('\n');
+      })
+      .join('\n\n------------------------------\n\n');
+  }
+
+  async function loadHistory() {
+    if (!isElectronEnv || !window.electronAPI?.readHistory) return;
+
+    const [estRows, cliRows] = await Promise.all([
+      window.electronAPI.readHistory('Estabelecimento'),
+      window.electronAPI.readHistory('Cliente')
+    ]);
+
+    if (historyEstEl) historyEstEl.textContent = formatHistoryRows(estRows);
+    if (historyCliEl) historyCliEl.textContent = formatHistoryRows(cliRows);
+  }
+
+  async function clearHistory(copy) {
+    if (!isElectronEnv || !window.electronAPI?.clearHistory) return;
+    const result = await window.electronAPI.clearHistory(copy);
+    if (!result?.ok) {
+      printStatus.textContent = `Falha ao limpar histórico (${copy}): ${result?.message || 'desconhecida'}`;
+      printStatus.className = 'print-error';
+      return;
+    }
+    await loadHistory();
   }
 
   function generateOSNumber() {
@@ -125,10 +179,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const agora = new Date();
     const dataHora = agora.toLocaleString("pt-BR");
     const previsaoVal = document.getElementById('previsao') ? document.getElementById('previsao').value : '';
+    const notaVal = document.getElementById('nota') ? document.getElementById('nota').value : '';
     const m = previsaoVal.match(/^(\d{4})-(\d{2})-(\d{2})$/);
     const previsaoText = m ? `${m[3]}/${m[2]}/${m[1]}` : (previsaoVal || '-');
 
     const setIf = (id, value) => { const el = document.getElementById(id); if (el) el.textContent = value; };
+
+    currentPrintPayload = {
+      osNumber: newOsNumber,
+      cliente: clienteVal,
+      telefone: formattedTef,
+      equipamento: equipamentoVal,
+      valor: rawValor,
+      previsao: previsaoText,
+      nota: notaVal.trim() || '-'
+    };
+
     
     // Preenche Via do Estabelecimento
     setIf('osIdEst', newOsNumber);
@@ -138,7 +204,6 @@ document.addEventListener('DOMContentLoaded', () => {
     setIf('osValorEst', 'R$ ' + rawValor.toFixed(2));
     setIf('osDataHoraEst', dataHora);
     setIf('osPrevisaoEst', previsaoText);
-    const notaVal = document.getElementById('nota') ? document.getElementById('nota').value : '';
     const osNotaEl = document.getElementById('osNotaEst');
     const osNotaTextoEl = document.getElementById('osNotaTextoEst');
     if (osNotaEl && osNotaTextoEl) {
@@ -174,8 +239,21 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // --- Event Listeners e Configurações Iniciais ---
+
   const printBtn = document.getElementById('printBtn');
   if (printBtn) printBtn.addEventListener('click', gerarOS);
+
+  if (refreshHistoryBtn) refreshHistoryBtn.addEventListener('click', loadHistory);
+  if (clearEstHistoryBtn) clearEstHistoryBtn.addEventListener('click', () => clearHistory('Estabelecimento'));
+  if (clearCliHistoryBtn) clearCliHistoryBtn.addEventListener('click', () => clearHistory('Cliente'));
+
+  if (isElectronEnv) {
+    loadHistory().catch((err) => {
+      printStatus.textContent = 'Não foi possível carregar o histórico.';
+      printStatus.className = 'print-error';
+      console.warn(err);
+    });
+  }
   
   if (tefInput) {
     tefInput.addEventListener('input', () => {
