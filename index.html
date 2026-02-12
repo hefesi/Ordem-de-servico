@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Nova Boa Sorte - Artigos de Pesca</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container no-print">
+  <div class="brand">
+    <div class="logo">NBS</div>
+    <div class="biz">
+      <h2 class="title">Nova Boa Sorte</h2>
+      <small class="muted">Artigos de Pesca — Ordem de Serviço</small>
+    </div>
+  </div>
+
+  <div class="fields">
+    <div class="field">
+      <label for="cliente"><strong>Cliente</strong><label>
+      <input type="text" id="cliente" placeholder="Nome do cliente">
+    </div>
+
+    <div class="field">
+      <label for="tef"><strong>Telefone</strong></label>
+      <input type="text" id="tef" placeholder="(00) 00000-0000">
+    </div>
+
+    <div class="field">
+      <label for="equipamento"><strong>Equipamento</strong></label>
+      <input type="text" id="equipamento" placeholder="Ex: Motor / Vara / Molinete">
+    </div>
+
+    <div class="field small">
+      <label for="valor"><strong>Valor (R$)</strong></label>
+      <input type="number" id="valor" placeholder="0.00" step="0.01">
+    </div>
+
+    <div class="field">
+      <label for="previsao"><strong>Previsão de entrega</strong></label>
+      <input type="date" id="previsao" placeholder="Previsão de entrega">
+    </div>
+
+    <div class="field">
+      <label for="nota"><strong>Serviço:</strong></label>
+      <textarea id="nota" placeholder="Descrição do serviço"></textarea>
+    </div>
+
+    <!-- Opções de formato removidas: impressão fixa para papel térmico -->
+
+    <div class="muted small">A impressão será feita em <strong>2 vias</strong>: <em>Estabelecimento</em> e <em>Cliente</em>.</div>
+
+    <div class="actions">
+      <button id="printBtn" class="btn btn-primary">Gerar & Imprimir</button>
+    </div>
+
+    <div id="printStatus" class="muted" aria-live="polite"></div>
+
+    <!-- Tela de status/overlay para sequência de impressão (segunda via) -->
+    <div id="printOverlay" class="print-overlay no-print" aria-hidden="true" role="dialog" aria-label="Status de impressão">
+      <div class="overlay-card" role="document">
+        <div class="overlay-header">
+          <strong id="overlayTitle">Impressão — 1/2</strong>
+          <button id="overlayClose" class="btn btn-secondary btn-close" aria-label="Fechar">✕</button>
+        </div>
+        <div class="overlay-body">
+          <div class="overlay-steps" aria-hidden="false">
+            <div class="step done" data-step="1"><span class="step-label">Via Estabelecimento</span><span class="step-icon" aria-hidden="true">✔️</span></div>
+            <div class="step active" data-step="2"><span class="step-label">Via Cliente</span><span class="step-icon" aria-hidden="true">🕒</span></div>
+          </div>
+
+          <div class="overlay-row">
+            <div id="overlaySpinner" class="spinner" role="status" aria-hidden="true"><span class="sr-only">Carregando…</span></div>
+            <div id="overlayMessage" class="muted">Preparando a segunda via para impressão...</div>
+          </div>
+
+          <div class="preview" id="overlayPreview" aria-hidden="true">
+            <img id="overlayThumb" alt="Pré-visualização da Via Cliente" src="" />
+            <div class="preview-mini" id="overlayPreviewFallback">Visualização rápida</div>
+          </div>
+        </div>
+
+        <div class="overlay-actions">
+          <button id="overlayRetry" class="btn btn-primary">🔁 Repetir impressão</button>
+          <button id="overlayManual" class="btn btn-secondary">🖨️ Imprimir manualmente</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ORDEM DE SERVIÇO: Via Estabelecimento -->
+<div class="os os-estabelecimento" id="osEstabelecimento" aria-label="Via Estabelecimento">
+  <div class="copy-label">Via Estabelecimento</div>
+  <h3>Nova Boa Sorte - Artigos de Pesca</h3>  
+
+  <p><strong>Nº OS: </strong> A- <span id="osIdEst"></span></p>
+  <p><strong>Cliente:</strong> <span id="osClienteEst"></span></p>
+  <p><strong>Telefone:</strong> <span id="osTefEst"></span></p>
+  <p><strong>Equipamento:</strong> <span id="osEquipamentoEst"></span></p>
+  <p><strong>Valor:</strong> <span id="osValorEst">R$ -</span></p>
+  <p><strong>Data/Hora:</strong> <span id="osDataHoraEst"></span></p>
+  <p><strong>Previsão de entrega:</strong> <span id="osPrevisaoEst"></span></p>
+  <p id="osNotaEst" style="display:none; margin-top: 10px; padding: 8px; background: #fbfcfe; font-size: 0.9rem;"><strong>Serviço:</strong> <span id="osNotaTextoEst"></span></p>
+  
+  <hr class="cut-line">
+
+  <p class="center">Assinatura:</p>
+  <br><br>
+  <p class="center">_______________________</p>
+  </div>
+
+ </div>
+
+<!-- ORDEM DE SERVIÇO: Via Cliente (layout separado) -->
+<div class="os os-cliente" id="osClienteCopy" aria-label="Via Cliente">
+  <div class="copy-label">Via Cliente</div>
+  <h3>Nova Boa Sorte - Artigos de Pesca</h3>
+  <p class="center">Contato: <span id="osContatoCliValue">(13) 98185-6723</span></p>
+
+  <p><strong>Nº OS:</strong> A-<span id="osIdCli"></span></p>
+  <p><strong>Cliente:</strong> <span id="osClienteCli"></span></p>
+  <p><strong>Equipamento:</strong> <span id="osEquipamentoCli"></span></p>
+  <p><strong>Valor:</strong> <span id="osValorCli">R$ -</span></p>
+  <p><strong>Data/Hora:</strong> <span id="osDataHoraCli"></span></p>
+  <p><strong>Previsão de entrega:</strong> <span id="osPrevisaoCli"></span></p>
+  <p id="osNotaCli" style="display:none; margin-top: 10px; padding: 8px; background: #fbfcfe; font-size: 0.9rem;"><strong>Serviço:</strong> <span id="osNotaTextoCli"></span></p>
+  <section class="terms" aria-label="Termos e Condições">
+    <h4>Termos e Condições</h4>
+    <ol>
+      <li>O prazo de garantia dos serviços prestados é de 30 dias.</li>
+      <li>Após a conclusão do serviço, voce sera notificado e tera até 30 dias para retirar o produto</li>
+      <li>após esse prazo o mesmo sera descartado sem aviso.</li>
+    </ol>
+  </section>
+
+  <hr class="cut-line">
+
+  <p class="center">Assinatura:</p>
+  <br><br>
+  <p class="center">_______________________</p>
+  </div>
+
+<script src="script.js"></script>
+</body>
+</html>
