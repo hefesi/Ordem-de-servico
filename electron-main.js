@@ -196,6 +196,7 @@ function processHistoryRetention(copy) {
   };
 }
 
+
 app.whenReady().then(() => {
   const cacheDir = path.join(app.getPath('userData'), 'GPUCache');
   if (fs.existsSync(cacheDir)) {
