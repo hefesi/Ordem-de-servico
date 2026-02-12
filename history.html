@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Histórico das Vias - Nova Boa Sorte</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="history-page">
+    <header class="history-page-header">
+      <h1>📚 Histórico das vias</h1>
+      <p class="muted">Registros ficam 30 dias no histórico atual, passam para Vencidos por 7 dias e depois são excluídos automaticamente.</p>
+    </header>
+
+    <section class="history" aria-label="Histórico das vias">
+      <div class="history-header">
+        <h3>Registros</h3>
+        <button id="refreshHistoryBtn" class="btn btn-secondary" type="button">Atualizar</button>
+      </div>
+
+      <div class="history-tabs" role="tablist" aria-label="Abas de histórico">
+        <button id="tabActive" class="tab-btn active" role="tab" aria-selected="true" type="button">Ativos (30 dias)</button>
+        <button id="tabExpired" class="tab-btn" role="tab" aria-selected="false" type="button">Vencidos (7 dias)</button>
+      </div>
+
+      <div id="panelActive" class="tab-panel" role="tabpanel">
+        <div class="history-grid">
+          <article class="history-col">
+            <div class="history-col-head">
+              <h4>Via Estabelecimento</h4>
+            </div>
+            <pre id="historyEstActive" class="history-box">Sem registros.</pre>
+          </article>
+
+          <article class="history-col">
+            <div class="history-col-head">
+              <h4>Via Cliente</h4>
+            </div>
+            <pre id="historyCliActive" class="history-box">Sem registros.</pre>
+          </article>
+        </div>
+      </div>
+
+      <div id="panelExpired" class="tab-panel" role="tabpanel" hidden>
+        <div class="history-grid">
+          <article class="history-col">
+            <div class="history-col-head">
+              <h4>Via Estabelecimento</h4>
+            </div>
+            <pre id="historyEstExpired" class="history-box">Sem registros vencidos.</pre>
+          </article>
+
+          <article class="history-col">
+            <div class="history-col-head">
+              <h4>Via Cliente</h4>
+            </div>
+            <pre id="historyCliExpired" class="history-box">Sem registros vencidos.</pre>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <p id="historyStatus" class="muted" aria-live="polite"></p>
+  </main>
+
+  <script src="history.js"></script>
+</body>
+</html>

@@ -14,6 +14,7 @@
       <h2 class="title">Nova Boa Sorte</h2>
       <small class="muted">Artigos de Pesca — Ordem de Serviço</small>
     </div>
+    <button id="toggleHistoryBtn" class="btn btn-secondary history-toggle" type="button">📚 Abrir histórico</button>
   </div>
 
   <div class="fields">
@@ -56,6 +57,19 @@
     </div>
 
     <div id="printStatus" class="muted" aria-live="polite"></div>
+
+    <button id="historyCtaBtn" class="history-cta" type="button" aria-label="Abrir página de histórico">
+      <span class="history-cta-icon" aria-hidden="true">📚</span>
+      <span class="history-cta-text">
+        <strong>Histórico de impressões</strong>
+        <small>Veja ativos (30 dias) e vencidos (7 dias)</small>
+      </span>
+      <span class="history-cta-arrow" aria-hidden="true">→</span>
+    </button>
+
+
+    
+
 
     <!-- Tela de status/overlay para sequência de impressão (segunda via) -->
     <div id="printOverlay" class="print-overlay no-print" aria-hidden="true" role="dialog" aria-label="Status de impressão">
