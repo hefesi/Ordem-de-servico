@@ -16,7 +16,13 @@
     <section class="history" aria-label="Histórico das vias">
       <div class="history-header">
         <h3>Registros</h3>
-        <button id="refreshHistoryBtn" class="btn btn-secondary" type="button">Atualizar</button>
+        <div class="history-actions">
+          <label class="history-search" for="historySearchInput" aria-label="Pesquisar no histórico">
+            <span aria-hidden="true">🔎</span>
+            <input id="historySearchInput" type="search" placeholder="Pesquisar histórico" autocomplete="off">
+          </label>
+          <button id="refreshHistoryBtn" class="btn btn-secondary" type="button">Atualizar</button>
+        </div>
       </div>
 
       <div class="history-tabs" role="tablist" aria-label="Abas de histórico">
@@ -30,14 +36,14 @@
             <div class="history-col-head">
               <h4>Via Estabelecimento</h4>
             </div>
-            <pre id="historyEstActive" class="history-box">Sem registros.</pre>
+            <div id="historyEstActive" class="history-box" role="list">Sem registros.</div>
           </article>
 
           <article class="history-col">
             <div class="history-col-head">
               <h4>Via Cliente</h4>
             </div>
-            <pre id="historyCliActive" class="history-box">Sem registros.</pre>
+            <div id="historyCliActive" class="history-box" role="list">Sem registros.</div>
           </article>
         </div>
       </div>
@@ -48,14 +54,14 @@
             <div class="history-col-head">
               <h4>Via Estabelecimento</h4>
             </div>
-            <pre id="historyEstExpired" class="history-box">Sem registros vencidos.</pre>
+            <div id="historyEstExpired" class="history-box" role="list">Sem registros vencidos.</div>
           </article>
 
           <article class="history-col">
             <div class="history-col-head">
               <h4>Via Cliente</h4>
             </div>
-            <pre id="historyCliExpired" class="history-box">Sem registros vencidos.</pre>
+            <div id="historyCliExpired" class="history-box" role="list">Sem registros vencidos.</div>
           </article>
         </div>
       </div>
