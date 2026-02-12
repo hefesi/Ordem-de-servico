@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const isElectronEnv = !!window.isElectron;
 
   const refreshHistoryBtn = document.getElementById('refreshHistoryBtn');
+  const historySearchInput = document.getElementById('historySearchInput');
   const historyStatus = document.getElementById('historyStatus');
 
   const tabActive = document.getElementById('tabActive');
@@ -13,6 +14,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const historyCliActiveEl = document.getElementById('historyCliActive');
   const historyEstExpiredEl = document.getElementById('historyEstExpired');
   const historyCliExpiredEl = document.getElementById('historyCliExpired');
+
+  let fullHistory = {
+    estActive: [],
+    cliActive: [],
+    estExpired: [],
+    cliExpired: []
+  };
 
   function setTab(tab) {
     const activeMode = tab === 'active';
@@ -50,6 +58,36 @@ document.addEventListener('DOMContentLoaded', () => {
       .join('\n\n------------------------------\n\n');
   }
 
+  function filterRows(rows, query) {
+    const normalized = (query || '').trim().toLocaleLowerCase('pt-BR');
+    if (!normalized) return rows;
+
+    return rows.filter((item) => {
+      const haystack = [
+        item?.osNumber,
+        item?.cliente,
+        item?.telefone,
+        item?.equipamento,
+        item?.previsao,
+        item?.nota,
+        item?.valor,
+        item?.createdAt,
+        item?.movedToExpiredAt
+      ]
+        .join(' ')
+        .toLocaleLowerCase('pt-BR');
+
+      return haystack.includes(normalized);
+    });
+  }
+
+  function renderHistory(query = '') {
+    historyEstActiveEl.textContent = formatHistoryRows(filterRows(fullHistory.estActive, query));
+    historyCliActiveEl.textContent = formatHistoryRows(filterRows(fullHistory.cliActive, query));
+    historyEstExpiredEl.textContent = formatHistoryRows(filterRows(fullHistory.estExpired, query), true);
+    historyCliExpiredEl.textContent = formatHistoryRows(filterRows(fullHistory.cliExpired, query), true);
+  }
+
   async function loadHistory() {
     if (!isElectronEnv || !window.electronAPI?.readHistory) {
       historyStatus.textContent = 'Histórico disponível apenas no app Electron.';
@@ -63,16 +101,15 @@ document.addEventListener('DOMContentLoaded', () => {
       window.electronAPI.readHistory('Cliente', 'expired')
     ]);
 
-    historyEstActiveEl.textContent = formatHistoryRows(estActive);
-    historyCliActiveEl.textContent = formatHistoryRows(cliActive);
-    historyEstExpiredEl.textContent = formatHistoryRows(estExpired, true);
-    historyCliExpiredEl.textContent = formatHistoryRows(cliExpired, true);
+    fullHistory = { estActive, cliActive, estExpired, cliExpired };
+    renderHistory(historySearchInput?.value || '');
     historyStatus.textContent = `Atualizado em ${new Date().toLocaleTimeString('pt-BR')}.`;
     historyStatus.className = 'muted';
   }
 
   if (tabActive) tabActive.addEventListener('click', () => setTab('active'));
   if (tabExpired) tabExpired.addEventListener('click', () => setTab('expired'));
+  if (historySearchInput) historySearchInput.addEventListener('input', (event) => renderHistory(event.target.value));
   if (refreshHistoryBtn) refreshHistoryBtn.addEventListener('click', () => loadHistory().catch(console.warn));
 
   setTab('active');
