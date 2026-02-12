@@ -32,30 +32,70 @@ document.addEventListener('DOMContentLoaded', () => {
     panelExpired.hidden = activeMode;
   }
 
+  function escapeHtml(value) {
+    return String(value ?? '')
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;')
+      .replaceAll("'", '&#39;');
+  }
+
   function formatHistoryRows(rows, expired = false) {
-    if (!rows || !rows.length) return expired ? 'Sem registros vencidos.' : 'Sem registros.';
+    if (!rows || !rows.length) {
+      return `<p class="history-empty">${expired ? 'Sem registros vencidos.' : 'Sem registros.'}</p>`;
+    }
+
     return rows
       .map((item) => {
         const when = item.createdAt ? new Date(item.createdAt).toLocaleString('pt-BR') : '-';
         const moved = item.movedToExpiredAt ? new Date(item.movedToExpiredAt).toLocaleString('pt-BR') : '-';
-        const base = [
-          `Data: ${when}`,
-          `OS: ${item.osNumber || '-'}`,
-          `Cliente: ${item.cliente || '-'}`,
-          `Telefone: ${item.telefone || '-'}`,
-          `Equipamento: ${item.equipamento || '-'}`,
-          `Valor: R$ ${Number(item.valor || 0).toFixed(2)}`,
-          `Previsão: ${item.previsao || '-'}`,
-          `Serviço: ${item.nota || '-'}`
-        ];
 
-        if (expired) {
-          base.push(`Movido para vencidos em: ${moved}`);
-        }
-
-        return base.join('\n');
+        return `
+          <article class="history-entry" role="listitem">
+            <p><strong>Data:</strong> ${escapeHtml(when)}</p>
+            <p><strong>OS:</strong> ${escapeHtml(item.osNumber || '-')}</p>
+            <p><strong>Cliente:</strong> ${escapeHtml(item.cliente || '-')}</p>
+            <p><strong>Telefone:</strong> ${escapeHtml(item.telefone || '-')}</p>
+            <p><strong>Equipamento:</strong> ${escapeHtml(item.equipamento || '-')}</p>
+            <p><strong>Valor:</strong> R$ ${escapeHtml(Number(item.valor || 0).toFixed(2))}</p>
+            <p><strong>Previsão:</strong> ${escapeHtml(item.previsao || '-')}</p>
+            <p><strong>Serviço:</strong> ${escapeHtml(item.nota || '-')}</p>
+            ${expired ? `<p><strong>Movido para vencidos:</strong> ${escapeHtml(moved)}</p>` : ''}
+          </article>
+        `;
       })
-      .join('\n\n------------------------------\n\n');
+      .join('');
+  }
+
+  function filterRows(rows, query) {
+    const normalized = (query || '').trim().toLocaleLowerCase('pt-BR');
+    if (!normalized) return rows;
+
+    return rows.filter((item) => {
+      const haystack = [
+        item?.osNumber,
+        item?.cliente,
+        item?.telefone,
+        item?.equipamento,
+        item?.previsao,
+        item?.nota,
+        item?.valor,
+        item?.createdAt,
+        item?.movedToExpiredAt
+      ]
+        .join(' ')
+        .toLocaleLowerCase('pt-BR');
+
+      return haystack.includes(normalized);
+    });
+  }
+
+  function renderHistory(query = '') {
+    historyEstActiveEl.innerHTML = formatHistoryRows(filterRows(fullHistory.estActive, query));
+    historyCliActiveEl.innerHTML = formatHistoryRows(filterRows(fullHistory.cliActive, query));
+    historyEstExpiredEl.innerHTML = formatHistoryRows(filterRows(fullHistory.estExpired, query), true);
+    historyCliExpiredEl.innerHTML = formatHistoryRows(filterRows(fullHistory.cliExpired, query), true);
   }
 
   function filterRows(rows, query) {

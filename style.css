@@ -313,18 +313,43 @@ body.printing-cliente .os-estabelecimento { display: none !important; }
 .history-col h4 { margin: 0; font-size: 0.9rem; color:#1e293b; }
 .history-box {
   margin-top: 8px;
-  background: #ffffff;
-  border: 1px solid #cfd8e3;
+  background: #f8fbff;
+  border: 1px solid #d7e3f1;
   border-radius: 8px;
-  padding: 12px;
-  max-height: 200px;
+  padding: 10px;
+  max-height: 300px;
   overflow: auto;
   font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
-  font-size: 0.92rem;
-  line-height: 1.45;
-  font-weight: 500;
+  font-size: 0.9rem;
+  line-height: 1.4;
   color:#0f172a;
-  white-space: pre-wrap;
+  display: grid;
+  gap: 8px;
+}
+
+.history-entry{
+  border: 1px solid #d8e2ee;
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 10px 12px;
+  box-shadow: 0 3px 10px rgba(15,23,42,0.06);
+}
+
+.history-entry p{
+  margin: 0 0 6px;
+}
+
+.history-entry p:last-child{
+  margin-bottom: 0;
+}
+
+.history-entry strong{
+  color: #1e293b;
+}
+
+.history-empty{
+  margin: 0;
+  color: #475569;
 }
 @media (min-width: 860px){
   .history-grid{grid-template-columns:1fr 1fr}
