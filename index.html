@@ -57,6 +57,29 @@
 
     <div id="printStatus" class="muted" aria-live="polite"></div>
 
+    <hr>
+    <section class="history no-print" aria-label="Histórico das vias">
+      <h3>Histórico das vias (arquivos limpáveis)</h3>
+      <div class="history-actions">
+        <button id="refreshHistoryBtn" class="btn btn-secondary" type="button">Atualizar histórico</button>
+      </div>
+
+      <div class="history-grid">
+        <div class="history-col">
+          <h4>Via Estabelecimento</h4>
+          <button id="clearEstHistoryBtn" class="btn btn-secondary" type="button">Limpar arquivo</button>
+          <pre id="historyEst" class="history-box">Sem registros.</pre>
+        </div>
+
+        <div class="history-col">
+          <h4>Via Cliente</h4>
+          <button id="clearCliHistoryBtn" class="btn btn-secondary" type="button">Limpar arquivo</button>
+          <pre id="historyCli" class="history-box">Sem registros.</pre>
+        </div>
+      </div>
+    </section>
+
+
     <!-- Tela de status/overlay para sequência de impressão (segunda via) -->
     <div id="printOverlay" class="print-overlay no-print" aria-hidden="true" role="dialog" aria-label="Status de impressão">
       <div class="overlay-card" role="document">

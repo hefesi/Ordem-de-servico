@@ -271,3 +271,20 @@ body.printing-cliente .os-estabelecimento { display: none !important; }
   }
 }
 
+
+.history { margin-top: 16px; }
+.history h3 { margin: 0 0 10px; font-size: 1rem; }
+.history-actions { margin-bottom: 10px; }
+.history-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
+.history-col h4 { margin: 0 0 6px; font-size: 0.92rem; }
+.history-box {
+  margin-top: 8px;
+  background: #fbfcfe;
+  border: 1px solid #e6e9ee;
+  border-radius: 8px;
+  padding: 10px;
+  max-height: 180px;
+  overflow: auto;
+  font-size: 0.8rem;
+  white-space: pre-wrap;
+}
