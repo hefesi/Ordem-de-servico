@@ -98,36 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
     historyCliExpiredEl.innerHTML = formatHistoryRows(filterRows(fullHistory.cliExpired, query), true);
   }
 
-  function filterRows(rows, query) {
-    const normalized = (query || '').trim().toLocaleLowerCase('pt-BR');
-    if (!normalized) return rows;
-
-    return rows.filter((item) => {
-      const haystack = [
-        item?.osNumber,
-        item?.cliente,
-        item?.telefone,
-        item?.equipamento,
-        item?.previsao,
-        item?.nota,
-        item?.valor,
-        item?.createdAt,
-        item?.movedToExpiredAt
-      ]
-        .join(' ')
-        .toLocaleLowerCase('pt-BR');
-
-      return haystack.includes(normalized);
-    });
-  }
-
-  function renderHistory(query = '') {
-    historyEstActiveEl.textContent = formatHistoryRows(filterRows(fullHistory.estActive, query));
-    historyCliActiveEl.textContent = formatHistoryRows(filterRows(fullHistory.cliActive, query));
-    historyEstExpiredEl.textContent = formatHistoryRows(filterRows(fullHistory.estExpired, query), true);
-    historyCliExpiredEl.textContent = formatHistoryRows(filterRows(fullHistory.cliExpired, query), true);
-  }
-
+  
   async function loadHistory() {
     if (!isElectronEnv || !window.electronAPI?.readHistory) {
       historyStatus.textContent = 'Histórico disponível apenas no app Electron.';
