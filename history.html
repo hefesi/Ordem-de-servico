@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Histórico das Vias - Nova Boa Sorte</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="history-page">
+    <header class="history-page-header">
+      <h1>📚 Histórico das vias</h1>
+      <p class="muted">Arquivos separados e limpáveis por tipo de via.</p>
+    </header>
+
+    <section class="history" aria-label="Histórico das vias">
+      <div class="history-header">
+        <h3>Registros</h3>
+        <button id="refreshHistoryBtn" class="btn btn-secondary" type="button">Atualizar</button>
+      </div>
+
+      <div class="history-grid">
+        <article class="history-col">
+          <div class="history-col-head">
+            <h4>Via Estabelecimento</h4>
+            <button id="clearEstHistoryBtn" class="btn btn-secondary" type="button">Limpar arquivo</button>
+          </div>
+          <pre id="historyEst" class="history-box">Sem registros.</pre>
+        </article>
+
+        <article class="history-col">
+          <div class="history-col-head">
+            <h4>Via Cliente</h4>
+            <button id="clearCliHistoryBtn" class="btn btn-secondary" type="button">Limpar arquivo</button>
+          </div>
+          <pre id="historyCli" class="history-box">Sem registros.</pre>
+        </article>
+      </div>
+    </section>
+
+    <p id="historyStatus" class="muted" aria-live="polite"></p>
+  </main>
+
+  <script src="history.js"></script>
+</body>
+</html>

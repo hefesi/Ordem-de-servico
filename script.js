@@ -22,6 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const osFooterEst = document.getElementById('osFooterEst');
   const previsaoInput = document.getElementById('previsao');
   const tefInput = document.getElementById('tef');
+  let currentPrintPayload = null;
 
   // Helper para alternar a classe de impressão no body
   function setPrintingClass(copy) {
@@ -41,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        window.electronAPI.print('Estabelecimento');
+        window.electronAPI.print('Estabelecimento', currentPrintPayload);
       });
     });
   }
@@ -63,7 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        window.electronAPI.print('Cliente');
+        window.electronAPI.print('Cliente', currentPrintPayload);
       });
     });
   }
@@ -87,6 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(printCliente, 700); // Delay para transição visual
       }
 
+
       if (copy === 'Cliente') {
         printStatus.textContent = '2/2 - Via Cliente impressa ✅';
         // Limpeza final após a conclusão
@@ -100,6 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
+
 
   function generateOSNumber() {
     try {
@@ -125,10 +128,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const agora = new Date();
     const dataHora = agora.toLocaleString("pt-BR");
     const previsaoVal = document.getElementById('previsao') ? document.getElementById('previsao').value : '';
+    const notaVal = document.getElementById('nota') ? document.getElementById('nota').value : '';
     const m = previsaoVal.match(/^(\d{4})-(\d{2})-(\d{2})$/);
     const previsaoText = m ? `${m[3]}/${m[2]}/${m[1]}` : (previsaoVal || '-');
 
     const setIf = (id, value) => { const el = document.getElementById(id); if (el) el.textContent = value; };
+
+    currentPrintPayload = {
+      osNumber: newOsNumber,
+      cliente: clienteVal,
+      telefone: formattedTef,
+      equipamento: equipamentoVal,
+      valor: rawValor,
+      previsao: previsaoText,
+      nota: notaVal.trim() || '-'
+    };
+
     
     // Preenche Via do Estabelecimento
     setIf('osIdEst', newOsNumber);
@@ -138,7 +153,6 @@ document.addEventListener('DOMContentLoaded', () => {
     setIf('osValorEst', 'R$ ' + rawValor.toFixed(2));
     setIf('osDataHoraEst', dataHora);
     setIf('osPrevisaoEst', previsaoText);
-    const notaVal = document.getElementById('nota') ? document.getElementById('nota').value : '';
     const osNotaEl = document.getElementById('osNotaEst');
     const osNotaTextoEl = document.getElementById('osNotaTextoEst');
     if (osNotaEl && osNotaTextoEl) {
@@ -174,8 +188,19 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // --- Event Listeners e Configurações Iniciais ---
+
   const printBtn = document.getElementById('printBtn');
   if (printBtn) printBtn.addEventListener('click', gerarOS);
+
+  const toggleHistoryBtn = document.getElementById('toggleHistoryBtn');
+  if (toggleHistoryBtn) toggleHistoryBtn.addEventListener('click', () => {
+    if (isElectronEnv && window.electronAPI?.openHistoryWindow) {
+      window.electronAPI.openHistoryWindow();
+      return;
+    }
+
+    window.open('history.html', '_blank');
+  });
   
   if (tefInput) {
     tefInput.addEventListener('input', () => {
