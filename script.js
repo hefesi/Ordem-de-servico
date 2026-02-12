@@ -112,6 +112,25 @@ document.addEventListener('DOMContentLoaded', () => {
   const refreshHistoryBtn = document.getElementById('refreshHistoryBtn');
   const clearEstHistoryBtn = document.getElementById('clearEstHistoryBtn');
   const clearCliHistoryBtn = document.getElementById('clearCliHistoryBtn');
+  const toggleHistoryBtn = document.getElementById('toggleHistoryBtn');
+  const historyPanel = document.getElementById('historyPanel');
+
+
+  async function toggleHistoryPanel(forceState) {
+    if (!historyPanel || !toggleHistoryBtn) return;
+
+    const shouldOpen = typeof forceState === 'boolean'
+      ? forceState
+      : historyPanel.hidden;
+
+    historyPanel.hidden = !shouldOpen;
+    toggleHistoryBtn.setAttribute('aria-expanded', String(shouldOpen));
+    toggleHistoryBtn.textContent = shouldOpen ? '📚 Fechar histórico' : '📚 Histórico';
+
+    if (shouldOpen) {
+      await loadHistory();
+    }
+  }
 
   function formatHistoryRows(rows) {
     if (!rows || !rows.length) return 'Sem registros.';
@@ -243,16 +262,26 @@ document.addEventListener('DOMContentLoaded', () => {
   const printBtn = document.getElementById('printBtn');
   if (printBtn) printBtn.addEventListener('click', gerarOS);
 
+  if (toggleHistoryBtn) toggleHistoryBtn.addEventListener('click', () => {
+    toggleHistoryPanel().catch((err) => {
+      printStatus.textContent = 'Não foi possível abrir o histórico.';
+      printStatus.className = 'print-error';
+      console.warn(err);
+    });
+  });
+
   if (refreshHistoryBtn) refreshHistoryBtn.addEventListener('click', loadHistory);
   if (clearEstHistoryBtn) clearEstHistoryBtn.addEventListener('click', () => clearHistory('Estabelecimento'));
   if (clearCliHistoryBtn) clearCliHistoryBtn.addEventListener('click', () => clearHistory('Cliente'));
 
+  if (historyPanel) historyPanel.hidden = true;
+  if (toggleHistoryBtn) {
+    toggleHistoryBtn.setAttribute('aria-expanded', 'false');
+    toggleHistoryBtn.textContent = '📚 Histórico';
+  }
+
   if (isElectronEnv) {
-    loadHistory().catch((err) => {
-      printStatus.textContent = 'Não foi possível carregar o histórico.';
-      printStatus.className = 'print-error';
-      console.warn(err);
-    });
+    // histórico carrega sob demanda ao abrir painel
   }
   
   if (tefInput) {

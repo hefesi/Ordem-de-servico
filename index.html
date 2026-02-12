@@ -14,6 +14,7 @@
       <h2 class="title">Nova Boa Sorte</h2>
       <small class="muted">Artigos de Pesca — Ordem de Serviço</small>
     </div>
+    <button id="toggleHistoryBtn" class="btn btn-secondary history-toggle" type="button" aria-expanded="false" aria-controls="historyPanel">📚 Histórico</button>
   </div>
 
   <div class="fields">
@@ -57,25 +58,28 @@
 
     <div id="printStatus" class="muted" aria-live="polite"></div>
 
-    <hr>
-    <section class="history no-print" aria-label="Histórico das vias">
-      <h3>Histórico das vias (arquivos limpáveis)</h3>
-      <div class="history-actions">
-        <button id="refreshHistoryBtn" class="btn btn-secondary" type="button">Atualizar histórico</button>
+    <section id="historyPanel" class="history no-print" aria-label="Histórico das vias" hidden>
+      <div class="history-header">
+        <h3>Histórico das vias (arquivos limpáveis)</h3>
+        <button id="refreshHistoryBtn" class="btn btn-secondary" type="button">Atualizar</button>
       </div>
 
       <div class="history-grid">
-        <div class="history-col">
-          <h4>Via Estabelecimento</h4>
-          <button id="clearEstHistoryBtn" class="btn btn-secondary" type="button">Limpar arquivo</button>
+        <article class="history-col">
+          <div class="history-col-head">
+            <h4>Via Estabelecimento</h4>
+            <button id="clearEstHistoryBtn" class="btn btn-secondary" type="button">Limpar arquivo</button>
+          </div>
           <pre id="historyEst" class="history-box">Sem registros.</pre>
-        </div>
+        </article>
 
-        <div class="history-col">
-          <h4>Via Cliente</h4>
-          <button id="clearCliHistoryBtn" class="btn btn-secondary" type="button">Limpar arquivo</button>
+        <article class="history-col">
+          <div class="history-col-head">
+            <h4>Via Cliente</h4>
+            <button id="clearCliHistoryBtn" class="btn btn-secondary" type="button">Limpar arquivo</button>
+          </div>
           <pre id="historyCli" class="history-box">Sem registros.</pre>
-        </div>
+        </article>
       </div>
     </section>
 
