@@ -88,9 +88,6 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(printCliente, 700); // Delay para transição visual
       }
 
-      if (isElectronEnv) {
-        loadHistory().catch(() => {});
-      }
 
       if (copy === 'Cliente') {
         printStatus.textContent = '2/2 - Via Cliente impressa ✅';
@@ -106,73 +103,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-
-  const historyEstEl = document.getElementById('historyEst');
-  const historyCliEl = document.getElementById('historyCli');
-  const refreshHistoryBtn = document.getElementById('refreshHistoryBtn');
-  const clearEstHistoryBtn = document.getElementById('clearEstHistoryBtn');
-  const clearCliHistoryBtn = document.getElementById('clearCliHistoryBtn');
-  const toggleHistoryBtn = document.getElementById('toggleHistoryBtn');
-  const historyPanel = document.getElementById('historyPanel');
-
-
-  async function toggleHistoryPanel(forceState) {
-    if (!historyPanel || !toggleHistoryBtn) return;
-
-    const shouldOpen = typeof forceState === 'boolean'
-      ? forceState
-      : historyPanel.hidden;
-
-    historyPanel.hidden = !shouldOpen;
-    toggleHistoryBtn.setAttribute('aria-expanded', String(shouldOpen));
-    toggleHistoryBtn.textContent = shouldOpen ? '📚 Fechar histórico' : '📚 Histórico';
-
-    if (shouldOpen) {
-      await loadHistory();
-    }
-  }
-
-  function formatHistoryRows(rows) {
-    if (!rows || !rows.length) return 'Sem registros.';
-    return rows
-      .map((item) => {
-        const when = item.createdAt ? new Date(item.createdAt).toLocaleString('pt-BR') : '-';
-        return [
-          `Data: ${when}`,
-          `OS: ${item.osNumber || '-'}`,
-          `Cliente: ${item.cliente || '-'}`,
-          `Telefone: ${item.telefone || '-'}`,
-          `Equipamento: ${item.equipamento || '-'}`,
-          `Valor: R$ ${Number(item.valor || 0).toFixed(2)}`,
-          `Previsão: ${item.previsao || '-'}`,
-          `Serviço: ${item.nota || '-'} `
-        ].join('\n');
-      })
-      .join('\n\n------------------------------\n\n');
-  }
-
-  async function loadHistory() {
-    if (!isElectronEnv || !window.electronAPI?.readHistory) return;
-
-    const [estRows, cliRows] = await Promise.all([
-      window.electronAPI.readHistory('Estabelecimento'),
-      window.electronAPI.readHistory('Cliente')
-    ]);
-
-    if (historyEstEl) historyEstEl.textContent = formatHistoryRows(estRows);
-    if (historyCliEl) historyCliEl.textContent = formatHistoryRows(cliRows);
-  }
-
-  async function clearHistory(copy) {
-    if (!isElectronEnv || !window.electronAPI?.clearHistory) return;
-    const result = await window.electronAPI.clearHistory(copy);
-    if (!result?.ok) {
-      printStatus.textContent = `Falha ao limpar histórico (${copy}): ${result?.message || 'desconhecida'}`;
-      printStatus.className = 'print-error';
-      return;
-    }
-    await loadHistory();
-  }
 
   function generateOSNumber() {
     try {
@@ -262,27 +192,15 @@ document.addEventListener('DOMContentLoaded', () => {
   const printBtn = document.getElementById('printBtn');
   if (printBtn) printBtn.addEventListener('click', gerarOS);
 
+  const toggleHistoryBtn = document.getElementById('toggleHistoryBtn');
   if (toggleHistoryBtn) toggleHistoryBtn.addEventListener('click', () => {
-    toggleHistoryPanel().catch((err) => {
-      printStatus.textContent = 'Não foi possível abrir o histórico.';
-      printStatus.className = 'print-error';
-      console.warn(err);
-    });
+    if (isElectronEnv && window.electronAPI?.openHistoryWindow) {
+      window.electronAPI.openHistoryWindow();
+      return;
+    }
+
+    window.open('history.html', '_blank');
   });
-
-  if (refreshHistoryBtn) refreshHistoryBtn.addEventListener('click', loadHistory);
-  if (clearEstHistoryBtn) clearEstHistoryBtn.addEventListener('click', () => clearHistory('Estabelecimento'));
-  if (clearCliHistoryBtn) clearCliHistoryBtn.addEventListener('click', () => clearHistory('Cliente'));
-
-  if (historyPanel) historyPanel.hidden = true;
-  if (toggleHistoryBtn) {
-    toggleHistoryBtn.setAttribute('aria-expanded', 'false');
-    toggleHistoryBtn.textContent = '📚 Histórico';
-  }
-
-  if (isElectronEnv) {
-    // histórico carrega sob demanda ao abrir painel
-  }
   
   if (tefInput) {
     tefInput.addEventListener('input', () => {

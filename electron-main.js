@@ -133,7 +133,23 @@ function createWindow() {
       return { ok: false, message: e.message };
     }
   });
+
+  ipcMain.on('open-history-window', () => {
+    const historyWindow = new BrowserWindow({
+      width: 760,
+      height: 700,
+      autoHideMenuBar: true,
+      webPreferences: {
+        preload: path.join(__dirname, 'preload.js'),
+        contextIsolation: true,
+        nodeIntegration: false
+      }
+    });
+
+    historyWindow.loadFile('history.html');
+  });
 }
+
 
 app.whenReady().then(() => {
   // Disable hardware acceleration if GPU cache issues persist

@@ -308,3 +308,17 @@ body.printing-cliente .os-estabelecimento { display: none !important; }
 @media (min-width: 860px){
   .history-grid{grid-template-columns:1fr 1fr}
 }
+
+.history-page{
+  max-width: 980px;
+  margin: 20px auto;
+  padding: 0 14px 20px;
+}
+.history-page-header h1{
+  margin: 0 0 6px;
+  font-size: 1.3rem;
+  color: var(--accent);
+}
+.history-page-header .muted{
+  margin: 0 0 12px;
+}

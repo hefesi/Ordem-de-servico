@@ -5,7 +5,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
   print: (copy, payload) => ipcRenderer.send('print', { copy, payload }),
   onPrintResult: (cb) => ipcRenderer.on('print-result', (event, arg) => cb(arg)),
   readHistory: (copy) => ipcRenderer.invoke('history:read', copy),
-  clearHistory: (copy) => ipcRenderer.invoke('history:clear', copy)
+  clearHistory: (copy) => ipcRenderer.invoke('history:clear', copy),
+  openHistoryWindow: () => ipcRenderer.send('open-history-window')
 });
 
 // Indica ao renderer que está em execução dentro do Electron
